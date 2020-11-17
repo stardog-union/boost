@@ -1,34 +1,7 @@
 load(":boost.bzl", "boost_library")
 
-config_setting(
-    name = "linux",
-    constraint_values = [
-        "@bazel_tools//platforms:linux",
-        "@bazel_tools//platforms:x86_64",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-config_setting(
-    name = "osx",
-    constraint_values = [
-        "@bazel_tools//platforms:osx",
-        "@bazel_tools//platforms:x86_64",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-config_setting(
-    name = "windows",
-    constraint_values = [
-        "@bazel_tools//platforms:windows",
-        "@bazel_tools//platforms:x86_64",
-    ],
-    visibility = ["//visibility:public"],
-)
-
 DEFAULT_COPTS = select({
-    ":linux": ["-Wno-unused-value"],
+    "@//:is_target_linux": ["-Wno-unused-value"],
     "//conditions:default": [],
 })
 
@@ -230,19 +203,19 @@ boost_library(
 )
 
 CONTEXT_PLATFORM_SRCS = select({
-    ":linux": [
+    "@//:is_target_linux": [
         "libs/context/src/asm/jump_x86_64_sysv_elf_gas.S",
         "libs/context/src/asm/make_x86_64_sysv_elf_gas.S",
         "libs/context/src/asm/ontop_x86_64_sysv_elf_gas.S",
         "libs/context/src/posix/stack_traits.cpp",
     ],
-    ":osx": [
+    "@//:is_target_osx": [
         "libs/context/src/asm/jump_x86_64_sysv_macho_gas.S",
         "libs/context/src/asm/make_x86_64_sysv_macho_gas.S",
         "libs/context/src/asm/ontop_x86_64_sysv_macho_gas.S",
         "libs/context/src/posix/stack_traits.cpp",
     ],
-    ":windows": [
+    "@//:is_target_windows": [
         "libs/context/src/asm/make_x86_64_ms_pe_masm.asm",
         "libs/context/src/asm/jump_x86_64_ms_pe_masm.asm",
         "libs/context/src/asm/ontop_x86_64_ms_pe_masm.asm",
@@ -367,13 +340,13 @@ boost_library(
 )
 
 COROUTINE_PLATFORM_SRCS = select({
-    ":linux": [
+    "@//:is_target_linux": [
         "libs/coroutine/src/posix/stack_traits.cpp",
     ],
-    ":osx": [
+    "@//:is_target_osx": [
         "libs/coroutine/src/posix/stack_traits.cpp",
     ],
-    ":windows": [
+    "@//:is_target_windows": [
         "libs/coroutine/src/windows/stack_traits.cpp",
     ],
 })
@@ -486,11 +459,11 @@ boost_library(
 )
 
 FIBER_PLATFORM_SRCS = select({
-    ":linux": [
+    "@//:is_target_linux": [
         "libs/fiber/src/numa/linux/pin_thread.cpp",
         "libs/fiber/src/numa/linux/topology.cpp",
     ],
-    ":windows": [
+    "@//:is_target_windows": [
         "libs/fiber/src/numa/windows/pin_thread.cpp",
         "libs/fiber/src/numa/windows/topology.cpp",
     ],
@@ -498,7 +471,7 @@ FIBER_PLATFORM_SRCS = select({
 })
 
 FIBER_PLATFORM_COPTS = select({
-    ":windows": [
+    "@//:is_target_windows": [
         "/D_WIN32_WINNT=0x0601",
     ],
     "//conditions:default": [],
@@ -1381,27 +1354,27 @@ boost_library(
 )
 
 STACKTRACE_PLATFORM_SRCS = select({
-    ":linux": [
+    "@//:is_target_linux": [
         "libs/stacktrace/src/backtrace.cpp",
     ],
-    ":osx": [
+    "@//:is_target_osx": [
         "libs/stacktrace/src/addr2line.cpp",
     ],
-    ":windows": [
+    "@//:is_target_windows": [
         "libs/stacktrace/src/windbg.cpp",
         "libs/stacktrace/src/windbg_cached.cpp",
     ],
 })
 
 STACKTRACE_PLATFORM_DEFINES = select({
-    ":osx": [
+    "@//:is_target_osx": [
         "BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED",
     ],
     "//conditions:default": [],
 })
 
 STACKTRACE_PLATFORM_LINKOPTS = select({
-    ":linux": [
+    "@//:is_target_linux": [
         "-lbacktrace -ldl",
     ],
     "//conditions:default": [],
